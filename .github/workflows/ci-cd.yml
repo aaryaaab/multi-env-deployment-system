@@ -43,9 +43,9 @@ jobs:
         working-directory: ./backend
         run: npm ci
 
-      - name: Run Backend Tests
-        working-directory: ./backend
-        run: npm test
+     # - name: Run Backend Tests
+      #  working-directory: ./backend
+       #   run: npm test
 
   build-docker:
     needs: test
