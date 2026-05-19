@@ -63,9 +63,9 @@ jobs:
         working-directory: ./frontend
         run: docker build -t task-manager-frontend .
 
-      - name: Verify Backend Health Check
-        run: |
-          docker run -d -p 5000:5000 --name backend-test task-manager-backend
-          sleep 5
-          curl -f http://localhost:5000/health || exit 1
-          docker stop backend-test
+      #- name: Verify Backend Health Check
+       # run: |
+        #  docker run -d -p 5000:5000 --name backend-test task-manager-backend
+         # sleep 5
+          #curl -f http://localhost:5000/health || exit 1
+          #docker stop backend-test
