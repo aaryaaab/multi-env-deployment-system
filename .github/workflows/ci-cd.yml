@@ -1,0 +1,72 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run Linter
+        working-directory: ./frontend
+        run: npm run lint
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run Backend Tests
+        working-directory: ./backend
+        run: npm test
+
+  build-docker:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build Backend Image
+        working-directory: ./backend
+        run: docker build -t task-manager-backend .
+
+      - name: Build Frontend Nginx Image
+        working-directory: ./frontend
+        run: docker build -t task-manager-frontend .
+
+      - name: Verify Backend Health Check
+        run: |
+          docker run -d -p 5000:5000 --name backend-test task-manager-backend
+          sleep 5
+          curl -f http://localhost:5000/health || exit 1
+          docker stop backend-test

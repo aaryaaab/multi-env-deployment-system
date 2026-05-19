@@ -1,0 +1,51 @@
+{
+  "title": "Task Manager Node.js Metrics",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total API Requests",
+      "targets": [
+        {
+          "expr": "sum(http_requests_total)",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory Usage (Bytes)",
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 9, "x": 6, "y": 0 }
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU Usage",
+      "targets": [
+        {
+          "expr": "process_cpu_user_seconds_total",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 9, "x": 15, "y": 0 }
+    },
+    {
+      "type": "timeseries",
+      "title": "API Requests per Route",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total[1m])) by (route)",
+          "legendFormat": "{{route}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 }
+    }
+  ],
+  "schemaVersion": 36
+}
