@@ -24,9 +24,9 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
-    #  - name: Run Linter
-     #   working-directory: ./frontend
-      #  run: npm run lint
+      - name: Run Linter
+        working-directory: ./frontend
+        run: npm run lint
 
   test:
     runs-on: ubuntu-latest
@@ -43,29 +43,24 @@ jobs:
         working-directory: ./backend
         run: npm ci
 
-     # - name: Run Backend Tests
-      #  working-directory: ./backend
-       #   run: npm test
+      - name: Run Backend Tests
+        working-directory: ./backend
+        run: npm test
 
   build-docker:
-    needs: test
+    needs: [lint, test]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Build Backend Image
-        working-directory: ./backend
-        run: docker build -t task-manager-backend .
+      - name: Build and Start Containers
+        run: docker compose up -d --build
 
-      - name: Build Frontend Nginx Image
-        working-directory: ./frontend
-        run: docker build -t task-manager-frontend .
+      - name: Verify Backend Health Check
+        run: |
+          sleep 12
+          curl -f http://localhost:5000/health || exit 1
 
-      #- name: Verify Backend Health Check
-       # run: |
-        #  docker run -d -p 5000:5000 --name backend-test task-manager-backend
-         # sleep 5
-          #curl -f http://localhost:5000/health || exit 1
-          #docker stop backend-test
+      - name: Stop Containers
+        run: docker compose down

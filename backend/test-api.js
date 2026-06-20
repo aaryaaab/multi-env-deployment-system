@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 async function testAPI() {
-  const baseURL = 'http://localhost:5000/api';
+  const baseURL = 'http://localhost/api';
   const testUser = {
     name: 'API Test User',
     email: `apitest${Date.now()}@example.com`,
